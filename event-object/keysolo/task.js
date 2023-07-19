@@ -5,6 +5,8 @@ class Game {
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
 
+    // this.symbolNeed = container.querySelector('.symbol_current');//
+ 
     this.reset();
 
     this.registerEvents();
@@ -25,6 +27,18 @@ class Game {
       При неправильном вводе символа - this.fail();
       DOM-элемент текущего символа находится в свойстве this.currentSymbol.
      */
+    
+    document.addEventListener("keydown", (event) => {//назначаю обработчик на клаву
+    
+      if(event.key.toUpperCase() === this.currentSymbol.textContent.toUpperCase()) {//проверяю совпадение нажатой кнопки и заданного символа из слова
+      this.success();
+      } else {
+      this.fail();
+
+      }
+   
+  });
+
   }
 
   success() {
@@ -82,6 +96,7 @@ class Game {
       .map(
         (s, i) =>
           `<span class="symbol ${i === 0 ? 'symbol_current': ''}">${s}</span>`
+          
       )
       .join('');
     this.wordElement.innerHTML = html;
