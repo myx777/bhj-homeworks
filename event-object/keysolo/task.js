@@ -4,18 +4,20 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
-
-    // this.symbolNeed = container.querySelector('.symbol_current');//
- 
+    this.timerStatus = container.querySelector('.status__timer');
+    // this.timer = this.timer.bind(this);// нужно при использовании декларации функции timer
     this.reset();
 
     this.registerEvents();
-  }
 
+    this.intervalTimer = setInterval(this.timer, 1000);//запуск таймера
+  }
+ 
   reset() {
     this.setNewWord();
     this.winsElement.textContent = 0;
     this.lossElement.textContent = 0;
+    this.timerStatus.textContent = this.wordElement.textContent.length; 
   }
 
   registerEvents() {
@@ -29,16 +31,21 @@ class Game {
      */
     
     document.addEventListener("keydown", (event) => {//назначаю обработчик на клаву
-    
       if(event.key.toUpperCase() === this.currentSymbol.textContent.toUpperCase()) {//проверяю совпадение нажатой кнопки и заданного символа из слова
       this.success();
       } else {
       this.fail();
-
       }
-   
-  });
+    }); 
+  }
 
+  timer = () => {//если использованить через function declaration, то надо добавлять bind 
+    this.timerStatus.textContent -= 1; //уменьшаем на 1 секунду таймер прикаждом вызове функции
+    if(this.timerStatus.textContent < 0){
+      this.fail();
+      this.setNewWord();
+      this.timerStatus.textContent = this.wordElement.textContent.length;
+    }
   }
 
   success() {
@@ -68,7 +75,6 @@ class Game {
 
   setNewWord() {
     const word = this.getWord();
-
     this.renderWord(word);
   }
 
