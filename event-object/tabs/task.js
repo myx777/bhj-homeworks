@@ -1,13 +1,17 @@
 "use strict";
 
 const tab = document.querySelectorAll(".tab"); // выбираем элементы (вкладки) из DOM
-const tabsContainer = document.querySelector(".tabs"); // контейнер вкладок
+const tabsContainer = document.querySelector(".tab__navigation"); // контейнер вкладок
 const tabContent = document.querySelectorAll(".tab__content"); // получаем контент вкладок из DOM
 
 // Функция, которая выполнится по клику на вкладку
-
 function tabClick(event) {
-  const clickedTab = event.target; // Получаем элемент (вкладку), на которую кликнули
+  const clickedTab = event.target.closest(".tab"); // Находим ближайший родительский элемент с классом "tab"
+
+  // Проверяем, если нет элемента с классом "tab" в родительских элементах, то выходим из функции
+  if (!clickedTab) {
+    return;
+  }
 
   // Проверяем, если текущая вкладка уже активна, то не делаем ничего
   if (clickedTab.classList.contains("tab_active")) {
