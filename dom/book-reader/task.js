@@ -33,7 +33,8 @@ function textColor (event){
     event.preventDefault();
     const clickTextColor = event.target;
     const clickColor = clickTextColor.dataset.textColor;
-
+    if(clickColor === undefined) return;//чтобы спаны с текстом и общие контейнеры не выделялись как элементы переключения цвета
+    
     if(clickTextColor.classList.contains("color_active")) return;
     [...color].forEach((item) => {//преобразование в массив с помощью спред оператора
         item.classList.remove("color_active");
@@ -52,6 +53,7 @@ function backgroundColor(event){
     const backgrund = clickBackgrund.dataset.bgColor;
     const classToAdd = `bg_color_${backgrund}`;
 
+    if(backgrund === undefined) return;
     if(clickBackgrund.classList.contains("color_active")) return;
     [...color].forEach((item) => {
         item.classList.remove("color_active");
