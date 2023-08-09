@@ -1,65 +1,60 @@
+const product = document.querySelectorAll(".product");//псевдомассив карточек с продуктами
+const cartProducts = document.querySelector(".cart__products");//псевдомассив карточек в корзине, HTML разметку которых буду вставлять при клике на корзину
 
-const product = document.querySelectorAll(".product");
-const cartProducts = document.querySelector(".cart__products");
+function createCartProduct(productId, productImageLink, counter) {//функция-заготовка HTML разметки товаров в корзине, с шаблонамиЖ id карточки, link на картинку и количество
+    return `
+        <div class="cart__product" data-id="${productId}">
+            <img class="cart__product-image" src="${productImageLink}">
+            <div class="cart__product-count">${counter}</div>
+        </div>
+    `;
+}
 
-product.forEach(item => {//начинаю с перебора всех карточек продукта
-    const productValue = item.querySelector(".product__quantity-value");//количество выбраного продукта из выбранного элемента (карточки продукта)
-    const productId = item.dataset.id;//id продукта выбранного элемента
-    let counter = 1;//счетчик
+function updateCartProductCounter(cartProduct, counter) {//функция добавления количество товара, когда товар уже в корзине
+    const cartProductCount = cartProduct.querySelector(".cart__product-count");//получаю количество товара из карточки определенного товара
+    const currentCount = parseInt(cartProductCount.textContent);//явное преобразование существующего уже количество товара в целое число
+    cartProductCount.textContent = currentCount + counter;//добавление к существаующему количеству товара, то что дополнительно накликали, когда товар в корзине
+}
 
-    function getListContent (productId, counter, productImageLink){//функция добавления кода в html (корзина)
-        /*
-        создаю сей код с добавлением нужных переменных в виде шаблонов
-               
-        <div class="cart__product" data-id="1">
-            <img class="cart__product-image" src="image.png">
-            <div class="cart__product-count">20</div>
-          </div> 
-         */
-
-        const cartProduct = document.querySelector(`.cart__product[data-id="${productId}"]`);//контейнер карточки товара из DOM с учетом ID (в виде шаблона)
-
-        if (cartProduct) {//если карта с таким же id  существует
-            const cartProductCount = cartProduct.querySelector(".cart__product-count");//количество товара из контейнера с карточки товара с тем же id
-            const currentCount = parseInt(cartProductCount.textContent);//явно преобразую строку в целое число
-            cartProductCount.textContent = currentCount + counter;//добавляю к имеющемуся количеству то число, которое накликали
-        } else {//если карточки товара с таким id нет, то создаю разметку с шаблонами на id, ссылки на картинку, количеством выбранного товара
-            cartProducts.insertAdjacentHTML('beforeend', `<div class="cart__product" data-id="${productId}">
-                <img class="cart__product-image" src="${productImageLink}">
-                <div class="cart__product-count">${counter}</div>
-                </div>`
-            );
-        }
+function addProductToCart(productId, productImageLink, counter) {//функция добавления карточки товара в корзину, если еще он не был добавлен
+    const cartProduct = document.querySelector(`.cart__product[data-id="${productId}"]`);//получаю карточку товара с имеющимся id
+    if (cartProduct) {//если карточка с таким id существует
+        updateCartProductCounter(cartProduct, counter);//то запускаю функция добавления количества товара к имеющемуся и запрещаю дублирование карточки
+    } else {//нет карточки с таким id
+        cartProducts.insertAdjacentHTML('beforeend', createCartProduct(productId, productImageLink, counter));//то добавляю карточку
     }
- 
-    function clickItem(event) {//функция, которая будет добавлена в обработчик
-        const clickAdd = event.target.closest(".product__quantity-control_inc");//близжайший родитель для увеличения количества
-        const clickReduce = event.target.closest(".product__quantity-control_dec");//близжайший родитель для уменьшения количества
-        const addBasket = event.target.closest(".product__add");//кнопка корзина
-        const productImage = item.querySelector(".product__image");//картинка
-        const productImageLink = productImage.getAttribute("src");//пролучаю ссылку на картинку
+}
 
-        if(clickAdd){//если клик на + то добавляю 1
-            counter++;
-        }
-
-        if(clickReduce){//тоже самое на -
-            counter--;
-        } 
-
-        if(counter < 0) {// проверка, недопущение уменьшение ниже 0         
-            alert( `Подарков нет!` );
-            return;
-        }
+function handleProductClick(event) {//функция добавления/уменьшения количества товара при клике
+    const clickAdd = event.target.closest(".product__quantity-control_inc");//получаю кнопку увеличения (на которую кликнули)
+    const clickReduce = event.target.closest(".product__quantity-control_dec");//тоже самое, только уменьшения
+    const addBasket = event.target.closest(".product__add");//кнопка добавить в корзину, на которую кликнули
+    const product = event.currentTarget;//определяю текущую карточку на которой сработал обработчик события
+    const productValue = product.querySelector(".product__quantity-value");//определяю из активной карточки продукта количество
+    const productId = product.dataset.id;//определяю из активной карточки продукта id
+    const productImage = product.querySelector(".product__image");//определяю из активной карточки продукта картинку
+    const productImageLink = productImage.getAttribute("src");//а теперь ссылку на картинку
     
-        productValue.textContent = counter;//присваиваю значения счетчика
+    let counter = parseInt(productValue.textContent);//назначаю счетчик с явным преобразованием в целое число из уже имеющегося количества товара
 
-        if (addBasket) { // добавить товар в корзину
-            getListContent(productId, counter, productImageLink);
-        }
-
+    if (clickAdd) {//если кликнули на кнопку с +
+        counter++;//то прибавляю 1
+    } else if (clickReduce) {//тоже самое, только уменьшаю
+        counter--;
+    } else if (addBasket) {//при клике на кнопку добавить в корзину
+        addProductToCart(productId, productImageLink, counter);//запускаю функцию добавления в HTML разметку корзины с карточкой товара 
+    } else {//если клик бы не на кнопках, то завершаю обработчик без выполнения другого кода
+        return;
     }
 
-    item.addEventListener("click", clickItem);//обработчик на клик
+    if (counter < 0) {//запрещаю выбор ниже 0
+        return;
+    }
     
+    productValue.textContent = counter;//присваиваю в HTML разметку количество, которое получилолсь в счетчике после всех кликов
+    console.log( event )
+}
+
+[...product].forEach(item => {//перебираю все карточки твора с явным преобразованием псевдо массива в массив
+    item.addEventListener("click", handleProductClick);// и на каждой карточке товара запускаю обработчик события клик
 });
