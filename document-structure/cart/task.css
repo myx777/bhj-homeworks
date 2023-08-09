@@ -1,5 +1,6 @@
 body {
   font-family: Arial;
+  margin: 30px !important;
 }
 .cart__products {
   display: flex;
@@ -85,7 +86,20 @@ body {
 .product__add:hover {
   opacity: 0.8;
 }
+.product__reduce {
+  background: green;
+  padding: 10px 10px;
+  text-align: center;
+  margin-right: 10px;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+.product__reduce:hover {
+  opacity: 0.8;
+  background-color: red;
+}
 .product-shadow {
   position: absolute;
 }
