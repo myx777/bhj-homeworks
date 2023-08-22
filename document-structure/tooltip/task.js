@@ -19,6 +19,10 @@ function openToolTip(event) {//функция отображения подск�
         chooseToolTip.insertAdjacentHTML('afterend', addHtml(textToolTip));//добавляю HTML разметку  (из функции созданной позже)
         const newToolTip = document.querySelector(".tooltip");//нахожу эту разметку и...
         newToolTip.classList.add("tooltip_active");//...добавляю класс для активации подсказки
+        
+        let coords = chooseToolTip.getBoundingClientRect();//вычисляю координаты,где был клик...
+        newToolTip.style.left = coords.left + "px";//...чтобы спозиционировать активную подсказку
+        newToolTip.style.top = coords.bottom + "px";//...теперь она находится под ссылкой, на которую кликнули
     }
 }
 
