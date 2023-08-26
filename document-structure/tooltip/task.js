@@ -1,43 +1,42 @@
 "use strict"
 
-const hasToolTip = document.querySelectorAll(".has-tooltip");//псевдомассив с подсказками
-let activeToolTip = null;//создаю переменную, чтобы отслеживать статус подсказки, активен или нет
+const hasToolTip = document.querySelectorAll(".has-tooltip");
+let activeToolTip = null;
 
-function openToolTip(event) {//функция отображения подсказки при клике
-    const chooseToolTip = event.target.closest(".has-tooltip");//определяю на какую именно подсказку был клик
-
-    activeToolTip = document.querySelector(".tooltip");//ищу активную подссказку с классом tooltip, так как при клике добавляется разметка с этим классом
-
-    if (activeToolTip) {// если уже есть активная подсказка, то...
-        activeToolTip.remove();//...удаляю ее
-        activeToolTip = null;//... и присваиваю исходный статус подсказки
-        return; // прекращаю выполнение функции
-    }
+function openToolTip(event) {
+    const chooseToolTip = event.target.closest(".has-tooltip");
     
-    if(chooseToolTip){//если нажали подсказку       
-        const textToolTip = chooseToolTip.title;//беру текст из ссылки для формирования текста в активной подсказке
-        chooseToolTip.insertAdjacentHTML('afterend', addHtml(textToolTip));//добавляю HTML разметку  (из функции созданной позже)
-        const newToolTip = document.querySelector(".tooltip");//нахожу эту разметку и...
-        newToolTip.classList.add("tooltip_active");//...добавляю класс для активации подсказки
-        
-        let coords = chooseToolTip.getBoundingClientRect();//вычисляю координаты,где был клик...
-        newToolTip.style.left = coords.left + "px";//...чтобы спозиционировать активную подсказку
-        newToolTip.style.top = coords.bottom + "px";//...теперь она находится под ссылкой, на которую кликнули
+    if (activeToolTip && activeToolTip !== chooseToolTip) {// Если есть активная подсказка и кликнули на другую подсказку
+        activeToolTip.nextElementSibling.remove(); // удаляем активную подсказку, т.е следующий элемент, после ссылки (подсказку,которую создал)
+        activeToolTip = null; // Сбрасываем активную подсказку
+
+    } else if (activeToolTip) { // если есть активная подсказка и кликнули на эту подсказку  
+        activeToolTip.nextElementSibling.remove();
+        activeToolTip = null; 
+        return; // Прекращаем выполнение функции
+    }
+
+    if (chooseToolTip) {
+        const textToolTip = chooseToolTip.title;
+        chooseToolTip.insertAdjacentHTML('afterend', addHtml(textToolTip));
+        activeToolTip = chooseToolTip; // Устанавливаем текущую активную подсказку
+        const newToolTip = chooseToolTip.nextElementSibling;
+        newToolTip.classList.add("tooltip_active");
+        const coords = chooseToolTip.getBoundingClientRect();
+        newToolTip.style.left = coords.left + "px";
+        newToolTip.style.top = coords.bottom + "px";
     }
 }
 
-function addHtml(textToolTip){//разметка добавления подсказки
+function addHtml(textToolTip) {
     return `
     <div class="tooltip">${textToolTip}</div>
     `;
 }
 
-hasToolTip.forEach((item) => {//перебираю все подсказки ...
-    item.addEventListener("click", (event) => {//чтобы на на каждой был обработчик события клик
-        event.preventDefault();//отмена перехода по ссылке (стандарнтного поведения)
-        openToolTip(event);//вызов функции отображения подсказки при клике
-        
+hasToolTip.forEach((item) => {
+    item.addEventListener("click", (event) => {
+        event.preventDefault();
+        openToolTip(event);
     });
-
 });
-
