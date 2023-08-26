@@ -22,7 +22,7 @@ function openToolTip(event) {
         activeToolTip = chooseToolTip; // Устанавливаем текущую активную подсказку
         const newToolTip = chooseToolTip.nextElementSibling;
         newToolTip.classList.add("tooltip_active");
-        const coords = chooseToolTip.getBoundingClientRect();
+        const coords = chooseToolTip.getBoundingClientRect();//определяю координаты
         newToolTip.style.left = coords.left + "px";
         newToolTip.style.top = coords.bottom + "px";
     }
