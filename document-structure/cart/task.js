@@ -44,8 +44,12 @@ function handleProductClick(event) {//функция добавления/уме
     
     let counter = parseInt(productValue.textContent);//назначаю счетчик с явным преобразованием в целое число из уже имеющегося количества товара
 
-    if(!clickAdd && !clickReduce && !addBasket) return;//проверка, чтобы нажимались только кнопки, в других местах обработчик прекращает выполнение кода
-
+    if(!clickAdd && !clickReduce && !addBasket) {//проверка, чтобы нажимались только кнопки, в других местах обработчик прекращает выполнение кода
+        return;
+    }
+    if(counter <= 0) {
+        return;
+    }    
     if (clickAdd) {//если кликнули на кнопку с +
         counter++;//то прибавляю 1
     } 
