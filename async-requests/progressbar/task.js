@@ -1,40 +1,37 @@
 "use strict";
 
 const progress = document.getElementById('progress');
-const sendBottom = document.getElementById('send');
-п
+const form = document.getElementById('form');
+
 function upload(file) {
     const xhr = new XMLHttpRequest();
-  
+
     // обработчик для отправки
-    xhr.onprogress = function(event) {//событие onprogress
+    xhr.upload.onprogress = function(event) {
         if (event.lengthComputable) {
-            const percentComplete = (event.loaded / event.total) * 100;
-            progress.value = percentComplete;
+            progress.value = (event.loaded / event.total) * 100;
         }
     }
-  
+
     // обработчики успеха и ошибки
-    // если status == 200, то это успех, иначе ошибка
     xhr.onload = xhr.onerror = function() {
-      if (this.status == 200) {
-        console.log("success");
-      } else {
-        console.log("error " + this.status);
-      }
+        if (this.status === 200) {
+            console.log("success");
+        } else {
+            console.log("error " + this.status);
+        }
     };
-  
+
     xhr.open("POST", "https://students.netoservices.ru/nestjs-backend/upload", true);
     xhr.send(file);
-  
 }
 
-sendBottom.addEventListener('click', (event) => {
+form.addEventListener('submit', (event) => {
     event.preventDefault();
-    const input = form.elements.file;
-    const file = input.files[0];
+    const fileInput = form.elements.file;
+    const file = fileInput.files[0];
     if (file) {
-      upload(file);
+        upload(file);
     }
     return false;
-})
+});
